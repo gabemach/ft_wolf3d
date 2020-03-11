@@ -6,7 +6,7 @@
 #    By: gmachado <gmachado@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/01/10 11:36:55 by gmachado          #+#    #+#              #
-#    Updated: 2020/01/30 17:49:12 by gmachado         ###   ########.fr        #
+#    Updated: 2020/02/06 14:39:44 by gmachado         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,6 @@ FRAMEWORKS = \
 
 ARCHIVE = \
 	-L ./includes/libft -l ft \
-	-L ./includes/minilibx_macos_sierra -l mlx \
 
 SRCS = \
 	./srcs/wolf3d.c \
@@ -33,25 +32,28 @@ SRCS = \
 	./srcs/keys.c \
 	./srcs/math.c \
 	./srcs/textures.c \
+	./srcs/c_f_calcs.c \
+	./srcs/audio.c \
+	./srcs/reader.c \
 
 OBJS = $(SRCS:.c=.o)
 
+%.o: %.c
+	gcc -c $< -o $@ -ggdb3 -O0 --std=c99 -Wall `sdl2-config --libs --cflags` -l SDL2_mixer
+
 all: $(NAME)
 
-$(NAME):
+$(NAME): $(OBJS)
 	@ echo Compiling...
 	@ make -C ./includes/libft
-	@ gcc -ggdb3 -O0 --std=c99 -Wall `sdl2-config --libs --cflags` -o $(NAME) $(SRCS) $(ARCHIVE) $(FRAMEWORKS) -g3 -fsanitize=address
-	@ make -C ./includes/minilibx_macos_sierra
-	@ echo Finished compiling! Run with ./wolf3d
-	# gcc  -o $(NAME) $(SRCS) $(ARCHIVE) -g3 -fsanitize=address -framework OpenGL -framework Appkit
+	@ gcc -ggdb3 -O0 --std=c99 -Wall `sdl2-config --libs --cflags` -l SDL2_mixer -o $(NAME) $(OBJS) $(ARCHIVE) $(FRAMEWORKS) -g
+	@ echo Finished compiling! Run with ./wolf3d {map path}
 
 clean:
 	@ make -C ./includes/libft clean
-	@ make -C ./includes/minilibx_macos_sierra clean
-	@ rm -f $(OFILES)
+	@ rm -f $(OBJS)
 
-fclean:
+fclean: clean
 	@ make -C ./includes/libft fclean
 	@ rm -f $(NAME)
 
